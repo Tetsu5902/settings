@@ -5,4 +5,8 @@ mklink /D %VAGRANT_INSTALL_DIR% %~dp0app\vagrant
 pushd %VAGRANT_INSTALL_DIR%
 
 vagrant init
+vagrant ssh-config ansible-slave00
+copy .vagrant/machines/ansible-slave00/virtualbox/private_key share/private_key.slave00
 vagrant up
+
+popd
