@@ -9,15 +9,47 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
-  config.ssh.insert_key = false
+  config.ssh.insert_key = true
 
   config.winnfsd.uid = 1000
   config.winnfsd.gid = 1000
   
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "generic/ubuntu1804"
-  config.vm.box_version = "1.6.20"
+  config.vm.define "ansible-master" do |node|
+    node.vm.box = "generic/ubuntu1804"
+	node.vm.box_version = "1.6.20"
+	node.vm.hostname = "ansible-master"
+    node.vm.network :forwarded_port, guest: 22, host: 2001, id: "ssh"
+    node.vm.network "private_network", ip: "192.168.33.10"
+    
+	node.vm.synced_folder "./share", "/share", type: "nfs"
+
+	node.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "512"
+    end
+
+    node.vm.provision "shell", path: "provision/setup_master.sh"
+  end
+  
+  config.vm.define "ansible-slave00" do |node|
+    node.vm.box = "generic/ubuntu1804"
+	node.vm.box_version = "1.6.20"
+    node.vm.hostname = "ansible-slave00"
+    node.vm.network :forwarded_port, guest: 22, host: 2002, id: "ssh"
+    node.vm.network "private_network", ip: "192.168.33.11"
+    
+	node.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "4096"
+    end
+
+    node.vm.provision "shell", path: "provision/setup_slave.sh"
+  end
+
+  #config.vm.box = "generic/ubuntu1804"
+  #config.vm.box_version = "1.6.20"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -27,16 +59,8 @@ Vagrant.configure("2") do |config|
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
   # config.vm.network "public_network"
-  config.vm.network "private_network", ip: "192.168.33.10"
+  #config.vm.network "private_network", ip: "192.168.33.10"
 
 
   #config.vm.synced_folder "./share", "/vagrant_data", :mount_options => ["dmode=777","fmode=777"], type: "nfs"
-  config.vm.synced_folder "./share", "/vagrant_data", type: "nfs"
-
-  config.vm.provider "virtualbox" do |vb|
-    vb.gui = false
-    vb.memory = "4096"
-  end
-
-  config.vm.provision "shell", path: "provision/vagrant_setup.sh"
 end
