@@ -1,9 +1,9 @@
 #Copy slave ssh keys(root acount)
-cp -p /share/private_key.slave00 /home/vagrant/.ssh/
+cp -p /share/ssh/private_key.slave00 /home/vagrant/.ssh/
 chown vagrant:vagrant /home/vagrant/.ssh/private_key.slave00
 chmod 600 /home/vagrant/.ssh/private_key.slave00
 
-cp -p /share/sshd_config /home/vagrant/.ssh/config
+cp -p /share/ssh/sshd_config /home/vagrant/.ssh/config
 chown vagrant:vagrant /home/vagrant/.ssh/config
 chmod 600 /home/vagrant/.ssh/config
 
